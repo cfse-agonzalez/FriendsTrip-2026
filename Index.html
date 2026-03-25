@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Friendstrip 2026 — Vote</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --forest: #1a2e1a;
+    --moss: #3d5c2e;
+    --sage: #7a9e6a;
+    --cream: #f5f0e8;
+    --warm: #e8dfc8;
+    --amber: #c8873a;
+    --rust: #a0522d;
+    --text: #2a1f14;
+    --muted: #7a6f5e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--forest);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 10% 90%, rgba(61,92,46,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 10%, rgba(122,158,106,0.15) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 3rem 0 2.5rem;
+    border-bottom: 1px solid rgba(245,240,232,0.1);
+    margin-bottom: 2.5rem;
+  }
+
+  .eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--sage);
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 0.75rem;
+  }
+
+  /* SCREENS */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp 0.5s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* NAME SELECTION */
+  .name-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .name-btn {
+    background: rgba(245,240,232,0.05);
+    border: 1px solid rgba(245,240,232,0.15);
+    color: var(--cream);
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+
+  .name-btn:hover {
+    background: rgba(122,158,106,0.15);
+    border-color: var(--sage);
+  }
+
+  .name-btn.selected {
+    background: rgba(122,158,106,0.25);
+    border-color: var(--sage);
+    color: #fff;
+  }
+
+  .name-btn.voted {
+    opacity: 0.4;
+    cursor: not-allowed;
+    position: relative;
+  }
+
+  .name-btn.voted::after {
+    content: '✓ voted';
+    font-size: 0.65rem;
+    color: var(--sage);
+    display: block;
+    margin-top: 2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* RANKING INTERFACE */
+  .rank-instructions {
+    background: rgba(122,158,106,0.1);
+    border: 1px solid rgba(122,158,106,0.2);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    font-size: 0.82rem;
+    color: var(--sage);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+  }
+
+  .rank-instructions strong { color: var(--cream); }
+
+  .airbnb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .airbnb-card {
+    background: rgba(245,240,232,0.04);
+    border: 1px solid rgba(245,240,232,0.1);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: grab;
+    transition: all 0.2s;
+    user-select: none;
+    position: relative;
+  }
+
+  .airbnb-card:active { cursor: grabbing; }
+  .airbnb-card.dragging {
+    opacity: 0.5;
+    border-color: var(--sage);
+    background: rgba(122,158,106,0.1);
+  }
+  .airbnb-card.drag-over {
+    border-color: var(--amber);
+    background: rgba(200,135,58,0.1);
+    transform: scale(1.01);
+  }
+
+  .rank-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: rgba(122,158,106,0.4);
+    width: 2rem;
+    text-align: center;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+
+  .airbnb-card:first-child .rank-num { color: var(--amber); }
+  .airbnb-card:nth-child(2) .rank-num { color: var(--sage); }
+
+  .card-info { flex: 1; }
+
+  .card-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--cream);
+    margin-bottom: 0.25rem;
+  }
+
+  .card-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .card-meta span { display: flex; align-items: center; gap: 0.3rem; }
+
+  .drag-handle {
+    color: rgba(245,240,232,0.2);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    cursor: grab;
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.9rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary {
+    background: var(--sage);
+    color: var(--forest);
+    width: 100%;
+    margin-top: 1.5rem;
+  }
+
+  .btn-primary:hover { background: #8fb87c; transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(245,240,232,0.2);
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    margin-top: 0.75rem;
+  }
+
+  .btn-ghost:hover { border-color: var(--muted); color: var(--cream); }
+
+  /* RESULTS */
+  .results-bar-wrapper { margin-bottom: 2rem; }
+
+  .result-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    background: rgba(245,240,232,0.03);
+    transition: all 0.3s;
+  }
+
+  .result-row.winner {
+    background: rgba(200,135,58,0.1);
+    border: 1px solid rgba(200,135,58,0.3);
+  }
+
+  .result-place {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    width: 2rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .result-row.winner .result-place { color: var(--amber); }
+
+  .result-name { font-size: 0.9rem; font-weight: 500; flex: 1; }
+  .result-score { font-size: 0.75rem; color: var(--sage); flex-shrink: 0; }
+
+  .result-bar-bg {
+    height: 4px;
+    background: rgba(245,240,232,0.08);
+    border-radius: 2px;
+    margin-top: 0.4rem;
+    overflow: hidden;
+  }
+
+  .result-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--sage);
+    transition: width 1s ease;
+  }
+
+  .result-row.winner .result-bar-fill { background: var(--amber); }
+
+  .voter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.5rem;
+  }
+
+  .voter-pill {
+    background: rgba(122,158,106,0.15);
+    border: 1px solid rgba(122,158,106,0.2);
+    border-radius: 20px;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.72rem;
+    color: var(--sage);
+  }
+
+  .voter-pill.pending {
+    background: rgba(245,240,232,0.04);
+    border-color: rgba(245,240,232,0.1);
+    color: var(--muted);
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+
+  .winner-banner {
+    text-align: center;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background: rgba(200,135,58,0.08);
+    border: 1px solid rgba(200,135,58,0.2);
+    border-radius: 12px;
+  }
+
+  .winner-banner .trophy { font-size: 2rem; margin-bottom: 0.5rem; }
+  .winner-banner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--amber);
+    margin-bottom: 0.25rem;
+  }
+  .winner-banner p { font-size: 0.85rem; color: var(--muted); }
+
+  .progress-indicator {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(245,240,232,0.15);
+  }
+  .dot.filled { background: var(--sage); }
+
+  .tab-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 0.6rem;
+    background: rgba(245,240,232,0.04);
+    border: 1px solid rgba(245,240,232,0.1);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .tab.active {
+    background: rgba(122,158,106,0.15);
+    border-color: var(--sage);
+    color: var(--cream);
+  }
+
+  .firebase-setup {
+    background: rgba(200,135,58,0.08);
+    border: 1px solid rgba(200,135,58,0.2);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .firebase-setup strong { color: var(--amber); display: block; margin-bottom: 0.4rem; }
+
+  .firebase-input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .firebase-input {
+    background: rgba(245,240,232,0.05);
+    border: 1px solid rgba(245,240,232,0.15);
+    border-radius: 6px;
+    padding: 0.6rem 0.9rem;
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    width: 100%;
+    outline: none;
+  }
+
+  .firebase-input:focus { border-color: var(--sage); }
+  .firebase-input::placeholder { color: var(--muted); }
+
+  .status-msg {
+    text-align: center;
+    padding: 1rem;
+    font-size: 0.82rem;
+    color: var(--sage);
+    border: 1px solid rgba(122,158,106,0.2);
+    border-radius: 8px;
+    margin-top: 1rem;
+  }
+
+  .status-msg.error { color: #e07070; border-color: rgba(224,112,112,0.2); }
+
+  /* Mobile touch drag support */
+  .touch-hint {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="eyebrow">🌲 Annual Friendstrip 2026</div>
+    <h1>Pick Our <em>Spot</em></h1>
+    <p class="subtitle">Rank all 7 cabins. We'll crunch the numbers.</p>
+  </header>
+
+  <!-- FIREBASE CONFIG SCREEN -->
+  <div class="screen active" id="screen-config">
+    <div class="firebase-setup">
+      <strong>⚙️ One-time Firebase Setup Required</strong>
+      To share votes across everyone's phones, you need a free Firebase Realtime Database.
+      <br><br>
+      1. Go to <strong style="color:var(--cream)">console.firebase.google.com</strong> → Create project<br>
+      2. Build → Realtime Database → Create database (test mode)<br>
+      3. Copy your database URL below (looks like <em>https://your-app.firebaseio.com</em>)
+    </div>
+    <div class="firebase-input-row">
+      <input class="firebase-input" id="firebase-url" type="url" placeholder="https://your-app-default-rtdb.firebaseio.com" />
+    </div>
+    <button class="btn btn-primary" onclick="initFirebase()">Connect & Start Voting →</button>
+    <div style="text-align:center;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="useLocalMode()">Use local mode (single device only)</button>
+    </div>
+    <div id="config-status"></div>
+  </div>
+
+  <!-- NAME SELECTION SCREEN -->
+  <div class="screen" id="screen-name">
+    <div class="section-label">Who are you?</div>
+    <div class="name-grid" id="name-grid"></div>
+    <div id="name-status"></div>
+  </div>
+
+  <!-- RANKING SCREEN -->
+  <div class="screen" id="screen-rank">
+    <div class="rank-instructions">
+      <strong>Drag to rank</strong> — put your top pick at #1.<br>
+      Your ranking is weighted: #1 = 7 pts, #2 = 6 pts, down to #7 = 1 pt.
+    </div>
+    <p class="touch-hint">📱 On mobile: tap and hold, then drag</p>
+    <div class="airbnb-list" id="airbnb-list"></div>
+    <button class="btn btn-primary" id="submit-btn" onclick="submitVote()">Submit My Rankings →</button>
+  </div>
+
+  <!-- THANK YOU SCREEN -->
+  <div class="screen" id="screen-thanks">
+    <div style="text-align:center;padding:3rem 1rem">
+      <div style="font-size:3rem;margin-bottom:1rem">🏕️</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;margin-bottom:0.75rem">You're in!</h2>
+      <p style="color:var(--muted);font-size:0.9rem;line-height:1.6">Your rankings have been saved.<br>We'll reveal the winner once everyone has voted.</p>
+      <div class="voter-pills" id="thanks-pills" style="justify-content:center;margin-top:2rem"></div>
+    </div>
+    <div style="text-align:center;margin-top:1rem">
+      <button class="btn btn-ghost" onclick="showAdminPrompt()">Admin →</button>
+    </div>
+  </div>
+
+  <!-- PASSWORD SCREEN -->
+  <div class="screen" id="screen-password">
+    <div style="padding:2rem 0">
+      <div class="section-label">Admin Access</div>
+      <div style="margin-bottom:1rem;font-size:0.85rem;color:var(--muted)">Enter the password to view results.</div>
+      <input class="firebase-input" type="password" id="admin-pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPassword()" />
+      <button class="btn btn-primary" onclick="checkPassword()">Unlock Results →</button>
+      <div id="pw-status"></div>
+      <div style="text-align:center;margin-top:0.75rem">
+        <button class="btn btn-ghost" onclick="showScreen('screen-thanks')">← Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="screen" id="screen-results">
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('standings')">Standings</button>
+      <button class="tab" onclick="switchTab('detail')">By Listing</button>
+    </div>
+
+    <div id="tab-standings">
+      <div id="winner-display"></div>
+      <div class="section-label">All Rankings</div>
+      <div id="results-bars"></div>
+      <div class="section-label">Votes Cast</div>
+      <div class="voter-pills" id="voter-pills"></div>
+    </div>
+
+    <div id="tab-detail" style="display:none">
+      <div id="detail-view"></div>
+    </div>
+
+    <div style="text-align:center;margin-top:2rem">
+      <button class="btn btn-ghost" onclick="refreshResults()">↻ Refresh Results</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================
+// DATA
+// =====================
+const VOTERS = ['Anthony', 'Savannah', 'Kevin', 'Eric', 'Nate', 'Danny', 'Jill'];
+const ADMIN_PASSWORD = 'slimjim6942';
+
+const AIRBNBS = [
+  { id: 'cabin-wv',       name: 'Cabin',             location: 'Mathias, WV',       price: 291.84, drive: '3h 30m', url: 'https://www.airbnb.com/rooms/810031580979012489?check_in=2026-10-02&check_out=2026-10-05&guests=1&adults=7&pets=1&s=67&unique_share_id=37582ec3-7479-499e-8011-481e76781934' },
+  { id: 'stars-ny',       name: 'Stars, Sky & Mtns', location: 'Bovina, NY',         price: 277.56, drive: '4h 30m', url: 'https://www.airbnb.com/rooms/620178676109585660?check_in=2026-10-02&check_out=2026-10-05&guests=1&adults=7&pets=1&s=67&unique_share_id=fc6a506a-1d83-459f-9c59-ef97be42f713' },
+  { id: 'deep-creek-md',  name: 'Deep Creek',         location: 'McHenry, MD',        price: 341.67, drive: '4h 20m', url: 'https://www.airbnb.com/rooms/979744886662915661?check_in=2026-10-02&check_out=2026-10-05&guests=1&adults=7&pets=1&s=67&unique_share_id=3cd67a78-9bfe-4a96-b039-a00b43b202f4' },
+  { id: 'rowanberry-ny',  name: 'Rowanberry Pines',   location: 'Tully, NY',          price: 293.06, drive: '4h 00m', url: 'https://www.airbnb.com/rooms/593558356466961241?check_in=2026-10-02&check_out=2026-10-05&guests=1&adults=7&pets=1&s=67&unique_share_id=59324315-5628-4ef9-82a1-91f2c225316a' },
+  { id: 'mountain-va',    name: 'Mountain Majesty',   location: 'Standardsville, VA', price: 353.35, drive: '4h 10m', url: 'https://www.airbnb.com/rooms/797792913877405818?check_in=2026-10-02&check_out=2026-10-05&guests=1&adults=7&pets=1&s=67&unique_share_id=5a121ce0-f534-45d2-aaeb-81e55674df5a' },
+  { id: 'bryce-va',       name: 'Bryce Resort',       location: 'Bayse, VA',          price: 358.45, drive: '3h 30m', url: 'https://www.airbnb.com/rooms/48973014?check_in=2026-10-02&check_out=2026-10-05&guests=1&adults=7&pets=1&s=67&unique_share_id=7fad0910-7adf-4ec5-8ccf-a0865c6641e7' },
+  { id: 'circle-va',      name: 'The Circle House',   location: 'Bayse, VA',          price: 259.99, drive: '3h 30m', url: 'https://www.airbnb.com/rooms/771769712227581253?check_in=2026-10-02&check_out=2026-10-05&guests=1&adults=7&pets=1&s=67&unique_share_id=6a72aeea-6fc8-4d09-a080-ab3df8a6d206' },
+];
+
+// =====================
+// STATE
+// =====================
+let db = 'https://friendstrip-2026-default-rtdb.firebaseio.com';
+let currentVoter = null;
+let currentRanking = [...AIRBNBS];
+let votesData = {};
+let localMode = false;
+
+// =====================
+// FIREBASE
+// =====================
+async function initFirebase() {
+  const url = document.getElementById('firebase-url').value.trim();
+  if (!url || !url.startsWith('https://')) {
+    showStatus('config-status', 'Please enter a valid Firebase URL', 'error');
+    return;
+  }
+
+  try {
+    // Test connection
+    const testRes = await fetch(`${url}/votes.json`);
+    if (!testRes.ok) throw new Error('Could not connect');
+    votesData = (await testRes.json()) || {};
+    db = url;
+    localStorage.setItem('friendstrip_firebase', url);
+    showScreen('screen-name');
+    renderNameGrid();
+  } catch(e) {
+    showStatus('config-status', 'Could not connect to Firebase. Check the URL and make sure the database is in test mode.', 'error');
+  }
+}
+
+function useLocalMode() {
+  localMode = true;
+  votesData = JSON.parse(localStorage.getItem('friendstrip_votes') || '{}');
+  showScreen('screen-name');
+  renderNameGrid();
+}
+
+async function saveVote(voter, ranking) {
+  const voteObj = { ranking, timestamp: Date.now() };
+  if (localMode) {
+    votesData[voter] = voteObj;
+    localStorage.setItem('friendstrip_votes', JSON.stringify(votesData));
+  } else {
+    await fetch(`${db}/votes/${voter}.json`, {
+      method: 'PUT',
+      body: JSON.stringify(voteObj)
+    });
+    votesData[voter] = voteObj;
+  }
+}
+
+async function loadVotes() {
+  if (localMode) {
+    votesData = JSON.parse(localStorage.getItem('friendstrip_votes') || '{}');
+  } else if (db) {
+    const res = await fetch(`${db}/votes.json`);
+    votesData = (await res.json()) || {};
+  }
+}
+
+// =====================
+// UI HELPERS
+// =====================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showStatus(id, msg, type='') {
+  const el = document.getElementById(id);
+  el.innerHTML = `<div class="status-msg ${type}">${msg}</div>`;
+}
+
+// =====================
+// NAME GRID
+// =====================
+function renderNameGrid() {
+  const grid = document.getElementById('name-grid');
+  grid.innerHTML = '';
+  VOTERS.forEach(name => {
+    const voted = votesData && votesData[name];
+    const btn = document.createElement('button');
+    btn.className = 'name-btn' + (voted ? ' voted' : '');
+    btn.textContent = name;
+    if (!voted) {
+      btn.onclick = () => {
+        document.querySelectorAll('.name-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        currentVoter = name;
+        setTimeout(() => startRanking(), 300);
+      };
+    }
+    grid.appendChild(btn);
+  });
+
+  // Show vote count only
+  const ns = document.getElementById('name-status');
+  const count = Object.keys(votesData).length;
+  ns.innerHTML = `
+    <div style="text-align:center;margin-top:1.5rem">
+      <div style="font-size:0.8rem;color:var(--muted)">${count} of ${VOTERS.length} have voted</div>
+    </div>
+  `;
+}
+
+// =====================
+// RANKING
+// =====================
+function startRanking() {
+  currentRanking = [...AIRBNBS];
+  showScreen('screen-rank');
+  renderRankingList();
+}
+
+function renderRankingList() {
+  const list = document.getElementById('airbnb-list');
+  list.innerHTML = '';
+
+  currentRanking.forEach((ab, i) => {
+    const card = document.createElement('div');
+    card.className = 'airbnb-card';
+    card.draggable = true;
+    card.dataset.id = ab.id;
+    card.innerHTML = `
+      <div class="rank-num">${i + 1}</div>
+      <div class="card-info">
+        <div class="card-name">${ab.name} <a href="${ab.url}" target="_blank" onclick="event.stopPropagation()" style="font-size:0.65rem;color:var(--sage);text-decoration:none;border:1px solid rgba(122,158,106,0.3);border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle">View ↗</a></div>
+        <div class="card-meta">
+          <span>📍 ${ab.location}</span>
+          <span>💵 $${ab.price.toFixed(0)}/pp</span>
+          <span>🚗 ${ab.drive}</span>
+        </div>
+      </div>
+      <div class="drag-handle">⠿</div>
+    `;
+
+    // Desktop drag
+    card.addEventListener('dragstart', handleDragStart);
+    card.addEventListener('dragover', handleDragOver);
+    card.addEventListener('drop', handleDrop);
+    card.addEventListener('dragend', handleDragEnd);
+
+    // Touch drag
+    card.addEventListener('touchstart', handleTouchStart, { passive: true });
+    card.addEventListener('touchmove', handleTouchMove, { passive: false });
+    card.addEventListener('touchend', handleTouchEnd);
+
+    list.appendChild(card);
+  });
+}
+
+// Desktop drag-and-drop
+let dragSrc = null;
+
+function handleDragStart(e) {
+  dragSrc = this;
+  this.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.querySelectorAll('.airbnb-card').forEach(c => c.classList.remove('drag-over'));
+  this.classList.add('drag-over');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  if (dragSrc !== this) {
+    const allCards = [...document.querySelectorAll('.airbnb-card')];
+    const srcIdx = allCards.indexOf(dragSrc);
+    const tgtIdx = allCards.indexOf(this);
+    const moved = currentRanking.splice(srcIdx, 1)[0];
+    currentRanking.splice(tgtIdx, 0, moved);
+    renderRankingList();
+  }
+}
+
+function handleDragEnd() {
+  document.querySelectorAll('.airbnb-card').forEach(c => {
+    c.classList.remove('dragging', 'drag-over');
+  });
+}
+
+// Touch drag-and-drop
+let touchItem = null, touchClone = null, touchStartY = 0, touchStartScrollY = 0;
+
+function handleTouchStart(e) {
+  touchItem = this;
+  touchStartY = e.touches[0].clientY;
+  touchStartScrollY = window.scrollY;
+  touchItem.style.opacity = '0.5';
+}
+
+function handleTouchMove(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const items = [...document.querySelectorAll('.airbnb-card')];
+  document.querySelectorAll('.airbnb-card').forEach(c => c.classList.remove('drag-over'));
+
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  const card = target?.closest('.airbnb-card');
+  if (card && card !== touchItem) card.classList.add('drag-over');
+}
+
+function handleTouchEnd(e) {
+  touchItem.style.opacity = '';
+  const touch = e.changedTouches[0];
+  const target = document.elementFromPoint(touch.clientX, touch.clientY);
+  const card = target?.closest?.('.airbnb-card');
+
+  if (card && card !== touchItem) {
+    const items = [...document.querySelectorAll('.airbnb-card')];
+    const srcIdx = items.indexOf(touchItem);
+    const tgtIdx = items.indexOf(card);
+    const moved = currentRanking.splice(srcIdx, 1)[0];
+    currentRanking.splice(tgtIdx, 0, moved);
+    renderRankingList();
+  }
+
+  document.querySelectorAll('.airbnb-card').forEach(c => c.classList.remove('drag-over'));
+  touchItem = null;
+}
+
+// =====================
+// SUBMIT
+// =====================
+async function submitVote() {
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  const ranking = currentRanking.map(ab => ab.id);
+  await saveVote(currentVoter, ranking);
+
+  btn.textContent = '✓ Saved!';
+  setTimeout(() => showThanks(), 800);
+}
+
+// =====================
+// THANKS + ADMIN
+// =====================
+async function showThanks() {
+  await loadVotes();
+  showScreen('screen-thanks');
+  const pillsEl = document.getElementById('thanks-pills');
+  pillsEl.innerHTML = '';
+  VOTERS.forEach(v => {
+    const pill = document.createElement('div');
+    pill.className = 'voter-pill' + (votesData[v] ? '' : ' pending');
+    pill.textContent = votesData[v] ? ('✓ ' + v) : v;
+    pillsEl.appendChild(pill);
+  });
+}
+
+function showAdminPrompt() {
+  document.getElementById('admin-pw-input').value = '';
+  document.getElementById('pw-status').innerHTML = '';
+  showScreen('screen-password');
+}
+
+async function checkPassword() {
+  const pw = document.getElementById('admin-pw-input').value;
+  if (pw === ADMIN_PASSWORD) {
+    await showResults();
+  } else {
+    document.getElementById('pw-status').innerHTML = '<div class="status-msg error">Wrong password.</div>';
+  }
+}
+
+// =====================
+// RESULTS
+// =====================
+async function showResults() {
+  await loadVotes();
+  showScreen('screen-results');
+  renderResults();
+}
+
+async function refreshResults() {
+  await loadVotes();
+  renderResults();
+}
+
+function goVote() {
+  showScreen('screen-name');
+  renderNameGrid();
+}
+
+function calcScores() {
+  const scores = {};
+  const voteDetails = {};
+  AIRBNBS.forEach(ab => {
+    scores[ab.id] = 0;
+    voteDetails[ab.id] = {};
+  });
+
+  const n = AIRBNBS.length;
+  Object.entries(votesData).forEach(([voter, data]) => {
+    if (!data.ranking) return;
+    data.ranking.forEach((id, i) => {
+      scores[id] = (scores[id] || 0) + (n - i);
+      voteDetails[id][voter] = n - i;
+    });
+  });
+
+  return { scores, voteDetails };
+}
+
+function renderResults() {
+  const { scores, voteDetails } = calcScores();
+  const voteCount = Object.keys(votesData).length;
+  const maxScore = AIRBNBS.length * voteCount;
+
+  // Sort by score
+  const sorted = [...AIRBNBS].sort((a, b) => (scores[b.id] || 0) - (scores[a.id] || 0));
+  const maxActual = scores[sorted[0]?.id] || 1;
+
+  // Winner banner
+  const winnerEl = document.getElementById('winner-display');
+  if (voteCount === 0) {
+    winnerEl.innerHTML = `<div class="status-msg">No votes yet — be the first!</div>`;
+  } else if (voteCount < VOTERS.length) {
+    const leader = sorted[0];
+    winnerEl.innerHTML = `
+      <div class="winner-banner">
+        <div class="trophy">🏕️</div>
+        <h2>${leader.name}</h2>
+        <p>Leading with ${scores[leader.id]} pts · ${voteCount}/${VOTERS.length} votes in</p>
+      </div>
+    `;
+  } else {
+    const winner = sorted[0];
+    winnerEl.innerHTML = `
+      <div class="winner-banner">
+        <div class="trophy">🏆</div>
+        <h2>${winner.name}</h2>
+        <p>${winner.location} · $${winner.price.toFixed(0)}/pp · ${winner.drive}</p>
+      </div>
+    `;
+  }
+
+  // Bars
+  const barsEl = document.getElementById('results-bars');
+  barsEl.innerHTML = '';
+  sorted.forEach((ab, i) => {
+    const score = scores[ab.id] || 0;
+    const pct = maxActual > 0 ? (score / maxActual * 100) : 0;
+    const row = document.createElement('div');
+    row.className = 'result-row' + (i === 0 && voteCount > 0 ? ' winner' : '');
+    row.innerHTML = `
+      <div class="result-place">${i + 1}</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="result-name">${ab.name}</div>
+          <div class="result-score">${score} pts</div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--muted);margin-top:2px">${ab.location} · $${ab.price.toFixed(0)}/pp · ${ab.drive}</div>
+        <div class="result-bar-bg"><div class="result-bar-fill" style="width:0%" data-pct="${pct}"></div></div>
+      </div>
+    `;
+    barsEl.appendChild(row);
+  });
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.result-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.pct + '%';
+    });
+  }, 100);
+
+  // Voter pills
+  const pillsEl = document.getElementById('voter-pills');
+  pillsEl.innerHTML = '';
+  VOTERS.forEach(v => {
+    const pill = document.createElement('div');
+    pill.className = 'voter-pill' + (votesData[v] ? '' : ' pending');
+    pill.textContent = votesData[v] ? `✓ ${v}` : v;
+    pillsEl.appendChild(pill);
+  });
+
+  // Detail view
+  const detailEl = document.getElementById('detail-view');
+  detailEl.innerHTML = '';
+  sorted.forEach(ab => {
+    const votes = voteDetails[ab.id];
+    const voterBreakdown = Object.entries(votes)
+      .sort((a,b) => b[1]-a[1])
+      .map(([v, pts]) => `<span style="font-size:0.75rem;color:var(--muted)">${v}: <span style="color:var(--sage)">${pts}pts</span></span>`)
+      .join(' &nbsp;·&nbsp; ');
+
+    detailEl.innerHTML += `
+      <div style="margin-bottom:1.5rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(245,240,232,0.07)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+          <div style="font-weight:500">${ab.name}</div>
+          <div style="font-size:0.82rem;color:var(--sage)">${scores[ab.id] || 0} total pts</div>
+        </div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.5rem">${ab.location} · $${ab.price.toFixed(2)}/pp · ${ab.drive} from Lancaster</div>
+        <div>${voterBreakdown || '<span style="font-size:0.75rem;color:var(--muted)">No votes yet</span>'}</div>
+      </div>
+    `;
+  });
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-standings').style.display = tab === 'standings' ? '' : 'none';
+  document.getElementById('tab-detail').style.display = tab === 'detail' ? '' : 'none';
+}
+
+// =====================
+// INIT
+// =====================
+window.onload = async () => {
+  const res = await fetch(`${db}/votes.json`);
+  votesData = (await res.json()) || {};
+  showScreen('screen-name');
+  renderNameGrid();
+};
+</script>
+</body>
+</html>
